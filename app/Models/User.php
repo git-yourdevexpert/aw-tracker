@@ -12,6 +12,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
 
+    const PENDING_VERIFICATION = '0';
+
     /**
      * The dates that will be mutated to Carbon instance.
      *
