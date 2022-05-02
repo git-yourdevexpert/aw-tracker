@@ -13,6 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     const PENDING_VERIFICATION = '0';
+    const VERFIFIED = '1';
 
     /**
      * The dates that will be mutated to Carbon instance.
@@ -29,7 +30,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'verification_token', 'status', 'c_time',
+        'first_name', 'last_name', 'email', 'email_verified_at', 'password', 'verification_token', 'status', 'c_time',
     ];
 
     /**
@@ -50,4 +51,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the full name of the user.
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 }

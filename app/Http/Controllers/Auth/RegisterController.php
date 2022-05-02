@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Mail\VerifyEmailAddress;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -35,10 +37,14 @@ class RegisterController extends Controller
         ]);
 
         $request['c_time'] = now();
+        session(['userPassword' => $request->password]);
         $request['password'] = bcrypt($request->password);
         $request['verification_token'] = \Illuminate\Support\Str::random(32);
         $request['status'] = User::PENDING_VERIFICATION;
-        User::create($request->all());
+        $user = User::create($request->all());
+
+        Mail::to($user->email, $user->getFullName())
+            ->send(new VerifyEmailAddress($user));
 
         session()->flash('successMessage', 'User registered successfully.');
 

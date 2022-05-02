@@ -13,15 +13,26 @@
     @yield('pluginCssLinks')
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}" />
+    @yield('pageStyle')
 </head>
 <body class="antialiased bg-gray-100">
     @include('partials._navigation')
+
+    @if (session('successMessage'))
+        <div class="container mx-auto">
+            <div class="bg-green-300 text-green-800 py-2 px-4 mt-4">
+                {{ session('successMessage') }}
+            </div>
+        </div>
+    @endif
 
     @yield('content')
 
     @include('partials._footer')
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     @yield('pluginJsLinks')
     <script src="{{ mix('/js/app.js') }}"></script>
+    @yield('pageScript')
 </body>
 </html>
