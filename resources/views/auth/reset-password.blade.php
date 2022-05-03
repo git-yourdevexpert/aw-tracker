@@ -1,54 +1,57 @@
 @extends('partials._layout')
 
 @section('title_meta')
-    <title>Login | {{ config('app.name') }}</title>
+    <title>Reset Password | {{ config('app.name') }}</title>
 @endsection
 
 @section('content')
     <section class="px-6 py-6">
         <div class="container max-w-lg mx-auto flex-1 flex flex-col items-center justify-center px-2">
             <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
-                <h1 class="mb-8 text-3xl text-center">Login</h1>
+                <h1 class="mb-8 text-3xl text-center">Reset Password</h1>
 
-                @if (session('couldNotLogin'))
-                    <div class="bg-red-300 text-red-800 py-2 px-4 mt-4">
-                        {{ session('couldNotLogin') }}
+                @if (session('successMessage'))
+                    <div class="bg-green-300 text-green-800 py-2 px-4 mt-4">
+                        {{ session('successMessage') }}
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('pages.login.check') }}" id="formLogin">
+                @if (session('errorMessage'))
+                    <div class="bg-red-300 text-red-800 py-2 px-4 mt-4">
+                        {{ session('errorMessage') }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('pages.resetPassword.update') }}" id="formResetPassword">
                     @csrf
 
+                    <input type="hidden" name="reset_token" value="{{ $record->token }}" />
+
                     <div class="mt-4">
-                        <label for="email" class="block text-gray-700">E-Mail:</label>
+                        <label for="new_password" class="block text-gray-700">New Password:</label>
                         <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            value="{{ old('email') }}"
+                            type="password"
+                            name="new_password"
+                            id="new_password"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
-                        @include('partials._validation_error_field', ['field' => 'email'])
+                        @include('partials._validation_error_field', ['field' => 'new_password'])
                     </div>
 
                     <div class="mt-4">
-                        <div class="flex justify-between items-center">
-                            <label for="password" class="block text-gray-700">Password:</label>
-
-                            <a href="{{ route('pages.forgotPassword') }}" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">Forgot Password</a>
-                        </div>
+                        <label for="repeat_new_password" class="block text-gray-700">Repeat New Password:</label>
                         <input
                             type="password"
-                            name="password"
-                            id="password"
+                            name="repeat_new_password"
+                            id="repeat_new_password"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
-                        @include('partials._validation_error_field', ['field' => 'password'])
+                        @include('partials._validation_error_field', ['field' => 'repeat_new_password'])
                     </div>
 
                     <button
                         type="submit"
-                        id="btnLogin"
+                        id="btnResetPassword"
                         class="mt-4 w-full py-2 px-4 rounded text-white bg-green-700 hover:bg-gray-900 focus:bg-gray-900 text-center transition ease-in-out duration-300"
                     >
                         <span class="spinner hidden">
@@ -57,16 +60,14 @@
                                 <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
                             </svg>
                         </span>
-                        <span class="btnText">Login</span>
+                        <span class="btnText">Reset Password</span>
                     </button>
                 </form>
             </div>
 
             <div class="text-gray-700 mt-6">
-                New User?
-                <a href="{{ route('pages.register') }}" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
-                    Register
-                </a>
+                Already have an account?
+                <a href="{{ route('pages.login') }}" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">Login</a>
             </div>
         </div>
     </section>
@@ -74,10 +75,10 @@
 
 @section('pageScript')
     <script>
-        $('#formLogin').on('submit', function (e) {
-            $('#btnLogin').attr('disabled', true).addClass('opacity-50');
-            $('#btnLogin .spinner').removeClass('hidden');
-            $('.btnText').text('Logging in...');
+        $('#formResetPassword').on('submit', function (e) {
+            $('#btnResetPassword').attr('disabled', true).addClass('opacity-50');
+            $('#btnResetPassword .spinner').removeClass('hidden');
+            $('.btnText').text('Resetting...');
         });
     </script>
 @endsection

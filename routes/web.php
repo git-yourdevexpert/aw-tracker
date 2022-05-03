@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Users\DashboardController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +31,11 @@ Route::name('pages')->group(function () {
 
         Route::get('/login', [LoginController::class, 'index'])->name('.login');
         Route::post('/login', [LoginController::class, 'check'])->name('.login.check');
+
+        Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('.forgotPassword');
+        Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('.forgotPassword.store');
+        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'index'])->name('.resetPassword');
+        Route::post('/reset-password', [ResetPasswordController::class, 'update'])->name('.resetPassword.update');
     });
 });
 
@@ -38,4 +45,3 @@ Route::middleware('auth')->name('users')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
     Route::delete('/logout', [DashboardController::class, 'logout'])->name('.logout');
 });
-
