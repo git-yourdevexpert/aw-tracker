@@ -6,6 +6,9 @@
 
     @yield('title_meta')
 
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('/images/favicon.png') }}" />
+    <meta name="theme-color" content="#15803d" />
+
     <meta name="robots" content="noindex, nofollow" />
 
     <!-- Fonts -->

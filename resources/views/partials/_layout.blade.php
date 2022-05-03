@@ -6,6 +6,9 @@
 
     @yield('title_meta')
 
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('/images/favicon.png') }}" />
+    <meta name="theme-color" content="#15803d" />
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
