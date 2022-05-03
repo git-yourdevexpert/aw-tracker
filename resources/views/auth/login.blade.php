@@ -10,7 +10,13 @@
             <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
                 <h1 class="mb-8 text-3xl text-center">Login</h1>
 
-                <form method="POST" action="#" id="formLogin">
+                @if (session('couldNotLogin'))
+                    <div class="bg-red-300 text-red-800 py-2 px-4 mt-4">
+                        {{ session('couldNotLogin') }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('pages.login.check') }}" id="formLogin">
                     @csrf
 
                     <div class="mt-4">
@@ -19,6 +25,7 @@
                             type="email"
                             name="email"
                             id="email"
+                            value="{{ old('email') }}"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
                         @include('partials._validation_error_field', ['field' => 'email'])
@@ -49,22 +56,12 @@
                         <span class="btnText">Login</span>
                     </button>
                 </form>
-
-                <div class="text-center text-sm text-gray-700 mt-4">
-                    By signing up, you agree to the
-                    <a href="#" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
-                        Terms of Service
-                    </a> and
-                    <a href="#" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
-                        Privacy Policy
-                    </a>
-                </div>
             </div>
 
             <div class="text-gray-700 mt-6">
-                Already have an account?
-                <a href="#" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
-                    Log in
+                New User?
+                <a href="{{ route('pages.register') }}" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
+                    Register
                 </a>
             </div>
         </div>
@@ -76,7 +73,7 @@
         $('#formLogin').on('submit', function (e) {
             $('#btnLogin').attr('disabled', true).addClass('opacity-50');
             $('#btnLogin .spinner').removeClass('hidden');
-            $('.btnText').text('Logining...');
+            $('.btnText').text('Logging in...');
         });
     </script>
 @endsection

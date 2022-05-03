@@ -96,7 +96,7 @@
 
             <div class="text-gray-700 mt-6">
                 Already have an account?
-                <a href="#" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
+                <a href="{{ route('pages.login') }}" class="text-green-700 hover:text-green-800 transition ease-in-out duration-300">
                     Log in
                 </a>
             </div>
