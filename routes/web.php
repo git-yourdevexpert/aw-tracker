@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Users\CompanyController;
 use App\Http\Controllers\Users\DashboardController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -45,6 +46,9 @@ Route::middleware('auth')->name('users')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
     Route::delete('/logout', [DashboardController::class, 'logout'])->name('.logout');
+
+    Route::get('/company', [CompanyController::class, 'index'])->name('.company');
+    Route::post('/company', [CompanyController::class, 'store'])->name('.company.store');
 
     Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('.accountSettings');
     Route::patch('/account-settings/general', [AccountSettingsController::class, 'updateGeneral'])->name('.accountSettings.updateGeneral');
