@@ -7,6 +7,7 @@ use App\Http\Controllers\Users\DashboardController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Users\AccountSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +45,7 @@ Route::middleware('auth')->name('users')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
     Route::delete('/logout', [DashboardController::class, 'logout'])->name('.logout');
+
+    Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('.accountSettings');
+    Route::patch('/account-settings/general', [AccountSettingsController::class, 'updateGeneral'])->name('.accountSettings.updateGeneral');
 });
