@@ -61,4 +61,38 @@ class User extends Authenticatable
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+
+    /**
+     * A user can be a part of multiple companies.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'users_company')->withPivot('access_level');
+    }
+
+    /**
+     * Check if the authenticated user is an owner of given company.
+     *
+     * @param  \App\Models\Company  $company
+     * @return boolean
+     */
+    public function isOwnerOfAnyCompany($company = null)
+    {
+        if ($company == null) {
+            $company = $this->companies()->first();
+        }
+
+        $hasUser = $company->users()->find($this->id);
+        if (! $hasUser) {
+            return false;
+        }
+
+        if ($hasUser->pivot->access_level === Company::ACCESS_OWNER) {
+            return true;
+        }
+
+        return false;
+    }
 }

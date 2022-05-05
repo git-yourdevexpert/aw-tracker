@@ -49,6 +49,7 @@ Route::middleware('auth')->name('users')->group(function () {
 
     Route::get('/company', [CompanyController::class, 'index'])->name('.company');
     Route::post('/company', [CompanyController::class, 'store'])->name('.company.store');
+    Route::patch('/company/{id}', [CompanyController::class, 'update'])->name('.company.update');
 
     Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('.accountSettings');
     Route::patch('/account-settings/general', [AccountSettingsController::class, 'updateGeneral'])->name('.accountSettings.updateGeneral');
