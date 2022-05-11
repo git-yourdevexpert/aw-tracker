@@ -15,6 +15,7 @@
                 <ul class="sm:flex sm:space-x-12 space-y-4 sm:space-y-0">
                     <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.dashboard') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Dashboard</a></li>
                     <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.company') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Company</a></li>
+                    <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.subscription') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Subscription</a></li>
                     <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.accountSettings') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Account Settings</a></li>
                     <li class="border-b sm:border-0 pb-2 sm:pb-0">
                         <form action="{{ route('users.logout') }}" method="POST">

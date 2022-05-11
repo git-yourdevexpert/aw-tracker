@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Users\AccountSettingsController;
+use App\Http\Controllers\Users\SubscriptionPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,10 @@ Route::middleware('auth')->name('users')->group(function () {
     Route::get('/company', [CompanyController::class, 'index'])->name('.company');
     Route::post('/company', [CompanyController::class, 'store'])->name('.company.store');
     Route::patch('/company/{id}', [CompanyController::class, 'update'])->name('.company.update');
+
+    Route::get('/subscription/select', [SubscriptionPaymentController::class, 'index'])->name('.subscription');
+    Route::post('/subscription/select', [SubscriptionPaymentController::class, 'store'])->name('.subscription.pay');
+    Route::get('/subscription-success', [SubscriptionPaymentController::class, 'success'])->name('.subscription.success');
 
     Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('.accountSettings');
     Route::patch('/account-settings/general', [AccountSettingsController::class, 'updateGeneral'])->name('.accountSettings.updateGeneral');
