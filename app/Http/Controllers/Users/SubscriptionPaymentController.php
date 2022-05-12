@@ -52,23 +52,9 @@ class SubscriptionPaymentController extends Controller
 
         try {
             $user = auth()->user();
-            $company = $user->companies()->first();
-
-            $customer = $stripe->customers->create([
-                'email' => $user->email,
-                'name' => $user->getFullName(),
-                'address' => [
-                    'line1' => $company->address1 . ' ' . $company->address2,
-                    'postal_code' => $company->zip,
-                    'city' => $company->city,
-                    'state' => $company->state,
-                    'country' => $company->country,
-                ],
-                'source' => request()->stripeToken,
-            ]);
 
             $response = $stripe->subscriptions->create([
-                'customer' => $customer->id,
+                'customer' => $user->stripe_customer_id,
                 'items' => [
                     ['price' => $price->id,]
                 ],
@@ -90,32 +76,7 @@ class SubscriptionPaymentController extends Controller
                 return redirect($captureResponse->next_action->redirect_to_url->url);
             }
 
-            dd($captureResponse);
-
-            /*$response = $stripe->paymentIntents->create([
-                "amount" => $price->unit_amount,
-                "currency" => $price->currency,
-                'customer' => $customer->id,
-                "description" => "Making a subscription payment for {$product->name}",
-                "capture_method" => "automatic",
-                "confirm" => true,
-                "confirmation_method" => "automatic",
-                "payment_method_types" => ['card'],
-                'payment_method_data' => [
-                    'type' => 'card',
-                    'card' => [
-                        'token' => request()->stripeToken
-                    ]
-                ]
-            ]);
-
-            $captureResponse = $stripe->paymentIntents->confirm(
-                $response->id, ['return_url' => route('users.subscription.success')]
-            );
-
-            if ($captureResponse->status === 'requires_action') {
-                return redirect($captureResponse->next_action->redirect_to_url->url);
-            }*/
+            return back();
         } catch (\Exception $e) {
             info($e->getMessage());
             info($e->getTraceAsString());
@@ -130,5 +91,37 @@ class SubscriptionPaymentController extends Controller
     {
         dd(request()->all());
         return view('users.subscription.success');
+    }
+
+    /**
+     * Store the Credit Card details
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeCard(Request $request)
+    {
+        $user = auth()->user();
+        $company = $user->companies()->first();
+
+        $stripeToken = $request->stripeToken;
+
+        try {
+            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            $stripe->customers->update($user->stripe_customer_id, [
+                'source' => $stripeToken,
+            ]);
+
+            $company->update(['stripe_token' => $stripeToken]);
+
+            session()->flash('successMessage', 'Card details added successfully');
+
+            return back();
+        } catch (\Exception $e) {
+            info($e->getMessage());
+            info($e->getTraceAsString());
+
+            return back();
+        }
     }
 }

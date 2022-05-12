@@ -44,13 +44,37 @@ class CompanyController extends Controller
             'country' => 'required|string|max:255',
         ]);
 
-        $company = Company::create($request->all());
+        try {
+            $company = Company::create($request->all());
 
-        $company->users()->attach(auth()->id(), ['access_level' => Company::ACCESS_OWNER]);
+            $company->users()->attach(auth()->id(), ['access_level' => Company::ACCESS_OWNER]);
 
-        session()->flash('successMessage', "Company created successfully.");
+            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            $customer = $stripe->customers->create([
+                'email' => auth()->user()->email,
+                'name' => auth()->user()->getFullName(),
+                'address' => [
+                    'line1' => $company->address1 . ' ' . $company->address2,
+                    'postal_code' => $company->zip,
+                    'city' => $company->city,
+                    'state' => $company->state,
+                    'country' => $company->country,
+                ],
+            ]);
 
-        return back();
+            auth()->user()->update([
+                'stripe_customer_id' => $customer->id,
+            ]);
+
+            session()->flash('successMessage', "Company created successfully.");
+
+            return back();
+        } catch (\Exception $e) {
+            info($e->getMessage());
+            info($e->getTraceAsString());
+
+            return back();
+        }
     }
 
     /**

@@ -31,6 +31,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'first_name', 'last_name', 'email', 'email_verified_at', 'password', 'verification_token', 'status', 'c_time',
+        'stripe_customer_id',
     ];
 
     /**
@@ -82,6 +83,10 @@ class User extends Authenticatable
     {
         if ($company == null) {
             $company = $this->companies()->first();
+        }
+
+        if (! $company) {
+            return false;
         }
 
         $hasUser = $company->users()->find($this->id);
