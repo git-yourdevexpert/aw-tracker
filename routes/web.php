@@ -48,9 +48,11 @@ Route::middleware('auth')->name('users')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
     Route::delete('/logout', [DashboardController::class, 'logout'])->name('.logout');
 
-    Route::get('/company', [CompanyController::class, 'index'])->name('.company');
-    Route::post('/company', [CompanyController::class, 'store'])->name('.company.store');
-    Route::patch('/company/{id}', [CompanyController::class, 'update'])->name('.company.update');
+    Route::prefix('company')->name('.company')->group(function () {
+        Route::get('/', [CompanyController::class, 'index']);
+        Route::post('/', [CompanyController::class, 'store'])->name('.store');
+        Route::patch('/{id}', [CompanyController::class, 'update'])->name('.update');
+    });
 
     Route::prefix('subscription')->name('.subscription')->group(function () {
         Route::get('/select', [SubscriptionPaymentController::class, 'index']);
@@ -61,7 +63,9 @@ Route::middleware('auth')->name('users')->group(function () {
         Route::get('/success', [SubscriptionPaymentController::class, 'success'])->name('.success');
     });
 
-    Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('.accountSettings');
-    Route::patch('/account-settings/general', [AccountSettingsController::class, 'updateGeneral'])->name('.accountSettings.updateGeneral');
-    Route::patch('/account-settings/change-password', [AccountSettingsController::class, 'changePassword'])->name('.accountSettings.changePassword');
+    Route::prefix('account-settings')->name('.accountSettings')->group(function () {
+        Route::get('/', [AccountSettingsController::class, 'index']);
+        Route::patch('/general', [AccountSettingsController::class, 'updateGeneral'])->name('.updateGeneral');
+        Route::patch('/change-password', [AccountSettingsController::class, 'changePassword'])->name('.changePassword');
+    });
 });
