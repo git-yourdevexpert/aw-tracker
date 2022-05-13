@@ -61,7 +61,6 @@ Route::middleware('auth')->name('users')->group(function () {
         Route::get('/success', [SubscriptionPaymentController::class, 'success'])->name('.success');
     });
 
-
     Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('.accountSettings');
     Route::patch('/account-settings/general', [AccountSettingsController::class, 'updateGeneral'])->name('.accountSettings.updateGeneral');
     Route::patch('/account-settings/change-password', [AccountSettingsController::class, 'changePassword'])->name('.accountSettings.changePassword');
