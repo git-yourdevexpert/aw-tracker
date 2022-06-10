@@ -9,7 +9,11 @@
         <div class="container max-w-lg mx-auto flex-1 flex flex-col items-center justify-center px-2">
             <div class="bg-white px-6 py-8 rounded shadow-md text-black w-full">
                 <h1 class="mb-8 text-3xl text-center">Login</h1>
-
+                @if (session('successMessage'))
+                    <div class="bg-green-300 text-green-800 py-2 px-4 mt-4">
+                        {{ session('successMessage') }}
+                    </div>
+                @endif
                 @if (session('couldNotLogin'))
                     <div class="bg-red-300 text-red-800 py-2 px-4 mt-4">
                         {{ session('couldNotLogin') }}
@@ -73,11 +77,5 @@
 @endsection
 
 @section('pageScript')
-    <script>
-        $('#formLogin').on('submit', function (e) {
-            $('#btnLogin').attr('disabled', true).addClass('opacity-50');
-            $('#btnLogin .spinner').removeClass('hidden');
-            $('.btnText').text('Logging in...');
-        });
-    </script>
+<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\LoginRequest', '#formLogin'); !!}</span> 
 @endsection

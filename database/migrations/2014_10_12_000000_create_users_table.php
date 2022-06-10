@@ -24,7 +24,6 @@ return new class extends Migration
             $table->rememberToken();
             $table->enum('status', ['0', '1'])->nullable(); // 0 = Pending, 1 = Verifiied
             $table->timestamp('c_time')->nullable();
-            $table->timestamps();
             $table->softDeletes();
         });
     }

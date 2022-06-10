@@ -42,7 +42,6 @@
                                     value="{{ old('name', $company->name) }}"
                                     class="block border border-gray-300 w-full p-3 rounded"
                                 />
-                                @include('partials._validation_error_field', ['field' => 'name'])
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
@@ -55,7 +54,6 @@
                                         value="{{ old('address1', $company->address1) }}"
                                         class="block border border-gray-300 w-full p-3 rounded"
                                     />
-                                    @include('partials._validation_error_field', ['field' => 'address1'])
                                 </div>
 
                                 <div>
@@ -67,7 +65,6 @@
                                         value="{{ old('address2', $company->address2) }}"
                                         class="block border border-gray-300 w-full p-3 rounded"
                                     />
-                                    @include('partials._validation_error_field', ['field' => 'address2'])
                                 </div>
                             </div>
 
@@ -81,7 +78,6 @@
                                         value="{{ old('city', $company->city) }}"
                                         class="block border border-gray-300 w-full p-3 rounded"
                                     />
-                                    @include('partials._validation_error_field', ['field' => 'city'])
                                 </div>
 
                                 <div>
@@ -93,7 +89,6 @@
                                         value="{{ old('state', $company->state) }}"
                                         class="block border border-gray-300 w-full p-3 rounded"
                                     />
-                                    @include('partials._validation_error_field', ['field' => 'state'])
                                 </div>
                             </div>
 
@@ -107,7 +102,6 @@
                                         value="{{ old('zip', $company->zip) }}"
                                         class="block border border-gray-300 w-full p-3 rounded"
                                     />
-                                    @include('partials._validation_error_field', ['field' => 'zip'])
                                 </div>
 
                                 <div>
@@ -119,7 +113,6 @@
                                         value="{{ old('country', $company->country) }}"
                                         class="block border border-gray-300 w-full p-3 rounded"
                                     />
-                                    @include('partials._validation_error_field', ['field' => 'country'])
                                 </div>
                             </div>
 
@@ -149,11 +142,5 @@
 @endsection
 
 @section('pageScript')
-    <script>
-        $('#formEditCompany').on('submit', function (e) {
-            $('#btnEditCompany').attr('disabled', true).addClass('opacity-50');
-            $('#btnEditCompany .spinner').removeClass('hidden');
-            $('#btnEditCompany .btnText').text('Updating...');
-        });
-    </script>
+<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\CompanyRequest', '#formEditCompany'); !!}</span>
 @endsection

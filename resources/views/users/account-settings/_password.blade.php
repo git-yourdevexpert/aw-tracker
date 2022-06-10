@@ -18,7 +18,6 @@
                         id="current_password"
                         class="block border border-gray-300 w-full p-3 rounded"
                     />
-                    @include('partials._validation_error_field', ['field' => 'current_password'])
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
@@ -30,7 +29,6 @@
                             id="new_password"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
-                        @include('partials._validation_error_field', ['field' => 'new_password'])
                     </div>
 
                     <div>
@@ -41,7 +39,6 @@
                             id="repeat_new_password"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
-                        @include('partials._validation_error_field', ['field' => 'repeat_new_password'])
                     </div>
                 </div>
 

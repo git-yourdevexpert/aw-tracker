@@ -18,7 +18,13 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('pages.forgotPassword') }}" id="formForgotPassword">
+                @if (session('errorMessage'))
+                    <div class="bg-red-300 text-red-800 py-2 px-4 mt-4">
+                        {{ session('errorMessage') }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('pages.forgotPassword.store') }}" id="formForgotPassword">
                     @csrf
 
                     <div class="mt-4">

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Mail\ResetPasswordLink;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 class ForgotPasswordController extends Controller
 {
@@ -39,11 +40,14 @@ class ForgotPasswordController extends Controller
         ]);
 
         $record = \DB::table('password_resets')->where('email', $request->email)->first();
-
-        Mail::to($request->email)
+        $user = User::where('email',$request->email)->first();
+        if($user->verification_token == null){
+            Mail::to($request->email)
             ->send(new ResetPasswordLink($record));
-
-        session()->flash('successMessage', "Password reset link email sent successfully.");
+            session()->flash('successMessage', "Password reset link email sent successfully.");
+        }else{
+            session()->flash('errorMessage', "Please verify Email First..");
+        }
 
         return back()->withInput();
     }

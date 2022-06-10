@@ -16,16 +16,15 @@ return new class extends Migration
         Schema::create('company', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255);
-            $table->string('address1', 255);
+            $table->string('address1', 255)->nullable();
             $table->string('address2', 255)->nullable();
-            $table->string('city', 255);
-            $table->char('state', 3);
-            $table->char('zip', 9);
-            $table->string('country', 255);
+            $table->string('city', 255)->nullable();
+            $table->char('state', 3)->nullable();
+            $table->char('zip', 9)->nullable();
+            $table->string('country', 255)->nullable();
             $table->enum('status', ['0', '1'])->default('0')->nullable(); // 0 = NOT_VERIFIED, 1 = VERIFIED
             $table->timestamp('c_time')->nullable();
             $table->string('stripe_token', 255)->nullable();
-            $table->timestamps();
             $table->softDeletes();
         });
     }

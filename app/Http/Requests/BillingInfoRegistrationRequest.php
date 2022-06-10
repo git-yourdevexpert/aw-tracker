@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class BillingInfoRegistrationRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'card-holder-name' => 'required|max:255',
+            'address1' => 'required|max:255',
+            'address2' => 'nullable|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:3',
+            'zip' => 'required|string|max:9',
+            'country' => 'required|string|max:255',
+            'payment_method'=> 'required',
+        ];
+    }
+}

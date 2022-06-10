@@ -22,15 +22,27 @@ class VerifyEmailController extends Controller
         if (! $user) {
             abort(404, "The given verification link is invalid.");
         }
-
+        
         $user->update([
             'status' => User::VERFIFIED,
             'email_verified_at' => now(),
             'verification_token' => null,
         ]);
-
-        session()->flash('successMessage', 'User verified successfully.');
-
-        return redirect(route('pages.login'));
+        
+        
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+        $products = $stripe->products->all(['expand' => ['data.default_price']]);
+        
+        $allProducts = [];
+        foreach ($products as $key => $product) {
+            $allProducts[$product->id] = [
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price_id' => $product->default_price->id,
+                'amount' => ($product->default_price->unit_amount / 100),
+            ];
+        }
+        return view('auth.registerCompany', compact('user','allProducts'))->with('successMessage', 'User verified successfully.');
     }
 }

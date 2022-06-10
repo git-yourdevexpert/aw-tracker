@@ -29,17 +29,6 @@
 @endsection
 
 @section('pageScript')
-    <script>
-        $('#formGeneralSettings').on('submit', function (e) {
-            $('#btnGeneralSettings').attr('disabled', true).addClass('opacity-50');
-            $('#btnGeneralSettings .spinner').removeClass('hidden');
-            $('.btnText').text('Updating...');
-        });
-
-        $('#formChangePassword').on('submit', function (e) {
-            $('#btnChangePassword').attr('disabled', true).addClass('opacity-50');
-            $('#btnChangePassword .spinner').removeClass('hidden');
-            $('#btnChangePassword .btnText').text('Changing...');
-        });
-    </script>
+<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\GeneralSettingRequest', '#formGeneralSettings'); !!}</span>
+<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\ChangePasswordRequest', '#formChangePassword'); !!}</span>
 @endsection

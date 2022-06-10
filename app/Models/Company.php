@@ -41,7 +41,7 @@ class Company extends Model
      * @var string
      */
     protected $table = 'company';
-
+    public $timestamps = false;
     /**
      * A company has many users attached to it.
      *

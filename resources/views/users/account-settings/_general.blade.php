@@ -20,7 +20,6 @@
                             value="{{ old('first_name', $user->first_name) }}"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
-                        @include('partials._validation_error_field', ['field' => 'first_name'])
                     </div>
 
                     <div>
@@ -32,7 +31,6 @@
                             value="{{ old('last_name', $user->last_name) }}"
                             class="block border border-gray-300 w-full p-3 rounded"
                         />
-                        @include('partials._validation_error_field', ['field' => 'last_name'])
                     </div>
                 </div>
 
@@ -45,7 +43,6 @@
                         value="{{ old('email', $user->email) }}"
                         class="block border border-gray-300 w-full p-3 rounded"
                     />
-                    @include('partials._validation_error_field', ['field' => 'email'])
                 </div>
 
                 <div class="flex items-center">

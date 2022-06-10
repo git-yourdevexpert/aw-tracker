@@ -3,10 +3,20 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Company;
+use App\Models\UsersCompany;
+use App\Models\Site;
+use App\Http\Requests\RegistrationRequest;
+use App\Http\Requests\CompanyRegistrationRequest;
+use App\Http\Requests\BillingInfoRegistrationRequest;
+use App\Http\Requests\ManageSiteRequest;
 use Illuminate\Http\Request;
 use App\Mail\VerifyEmailAddress;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Uuid;
+use Auth;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -26,28 +36,106 @@ class RegisterController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return [type]           [description]
      */
-    public function store(Request $request)
+    public function store(RegistrationRequest $request)
     {
-        $this->validate($request, [
-            'first_name' => 'required|max:255',
-            'last_name' => 'required|max:255',
-            'email' => 'required|email:filter|unique:users,email',
-            'password' => 'required',
-            'confirm_password' => 'required|same:password',
-        ]);
-
+        $validated = $request->validated();
         $request['c_time'] = now();
-        session(['userPassword' => $request->password]);
-        $request['password'] = bcrypt($request->password);
+        $request['password'] = Hash::make($request->password);
         $request['verification_token'] = \Illuminate\Support\Str::random(32);
         $request['status'] = User::PENDING_VERIFICATION;
         $user = User::create($request->all());
-
         Mail::to($user->email, $user->getFullName())
             ->send(new VerifyEmailAddress($user));
+        return redirect()->route('pages.register')->with('successMessage', 'Please Check Your Mail and Verify Your Account.');
+    }
 
-        session()->flash('successMessage', 'User registered successfully.');
+    public function storeCompany(CompanyRegistrationRequest $request){
+        $validated = $request->validated();
+        $company = Company::create($request->all());
+        $usersCompany = UsersCompany::create([
+            'user_id' => $request->id,
+            'company_id' => $company->id,
+        ]);
+        $user = User::where('id',$usersCompany->user_id)->first();
+        $intent = $user->createSetupIntent();
+        $product_id = $request->product_id;
+        return view('auth.billingInfo',compact('company','product_id','intent','user'));
+    }
 
-        return redirect(url('/'));
+    public function registerBilling($id,BillingInfoRegistrationRequest $request){
+        $validated = $request->validated();
+            $company = Company::find($id);
+            $usersCompany = UsersCompany::where('company_id',$company->id)->first();
+            $user = User::where('id',$usersCompany->user_id)->first();
+            $company->update($request->all());
+            $company->users()->attach($user->id, ['access_level' => Company::ACCESS_OWNER]);
+
+            //create customer on stripe
+            $customer = $user->createAsStripeCustomer([
+                'email' => $user->email,
+                'name' => $user->getFullName(),
+                'address' => [
+                    'line1' => $company->address1 . ' ' . $company->address2,
+                    'postal_code' => $company->zip,
+                    'city' => $company->city,
+                    'state' => $company->state,
+                    'country' => $company->country,
+                ],
+            ]);
+
+            $user->update([
+                'stripe_customer_id' => $customer->id,
+            ]);
+            //create card on stripe
+            $paymentMethod = $request->input('payment_method');
+            $payment_method = $user->addPaymentMethod($paymentMethod);
+            $company = $user->companies()->first();
+            $company->update(['stripe_token' => $paymentMethod]);
+
+            //create subscription on stripe
+            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            $product = $stripe->products->retrieve($request->product_id);
+            $price = $stripe->prices->retrieve($product->default_price);
+
+            $subscription = $user->newSubscription('default', $product)->create($paymentMethod, [
+                'email' => $user->email
+            ]);
+            dd($subscription);
+            // $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            // $product = $stripe->products->retrieve($request->product_id);
+            // $response = $stripe->subscriptions->create([
+            //     'customer' => $user->stripe_customer_id,
+            //     'items' => [
+            //         ['price' => $price->id,]
+            //     ],
+            //     'description' => "Making a subscription payment for {$product->name}",
+            //     'billing_cycle_anchor' => today()->addMonth()->timestamp,
+            //     'payment_settings' => [
+            //         'payment_method_types' => [
+            //             'card',
+            //         ]
+            //     ]
+            // ]);
+
+            $invoice = $stripe->invoices->retrieve($response->latest_invoice);
+
+            session()->flash('successMessage', "Your Account Sign up Sucessfully.");
+            return view('auth.manageSites',compact('user','company'));
+    }
+
+    public function siteStore(ManageSiteRequest $request){
+        $validated = $request->validated();
+        $token = Uuid::generate()->string;
+
+        $site = new Site();
+        $site->company_id = $request->company_id;
+        $site->user_id = $request->user_id;
+        $site->token = $token;
+        $site->domain = $request->domain;
+        $site->save();
+        if($site){
+            Auth::loginUsingId($request->user_id);
+        }
+        return view('users.dashboard',compact('site'));
     }
 }

@@ -18,6 +18,7 @@
     @yield('pluginCssLinks')
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/scss/app.scss') }}" />
     @yield('pageStyle')
 </head>
 <body class="antialiased bg-gray-100">
@@ -30,6 +31,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     @yield('pluginJsLinks')
     <script src="{{ mix('/js/app.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js')}}"></script>
     @yield('pageScript')
 </body>
 </html>

@@ -21,13 +21,13 @@
 <body class="antialiased bg-gray-100">
     @include('partials._navigation')
 
-    @if (session('successMessage'))
+    <!-- @if (session('successMessage'))
         <div class="container mx-auto">
             <div class="bg-green-300 text-green-800 py-2 px-4 mt-4">
                 {{ session('successMessage') }}
             </div>
         </div>
-    @endif
+    @endif -->
 
     @yield('content')
 
@@ -36,6 +36,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     @yield('pluginJsLinks')
     <script src="{{ mix('/js/app.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js')}}"></script>
     @yield('pageScript')
 </body>
 </html>

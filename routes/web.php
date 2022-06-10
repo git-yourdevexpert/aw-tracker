@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Users\AccountSettingsController;
 use App\Http\Controllers\Users\SubscriptionPaymentController;
+use App\Http\Controllers\Users\ManagesitesController;
+use App\Http\Controllers\Users\SiteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,11 +28,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::stripeWebhooks('stripe-webhook');
+
 Route::name('pages')->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/register', [RegisterController::class, 'index'])->name('.register');
         Route::post('/register', [RegisterController::class, 'store'])->name('.register.store');
         Route::get('/verify-email/{token}', [VerifyEmailController::class, 'check'])->name('.register.verifyEmail');
+        Route::get('/registerCompany', [RegisterController::class, 'registerCompany'])->name('.register.company');
+        Route::post('/registerCompany', [RegisterController::class, 'storeCompany'])->name('.registerCompany.store');
+        Route::get('/billingInfo', [RegisterController::class, 'billingInfo'])->name('.register.billingInfo');
+        Route::post('/registerBilling/{id}', [RegisterController::class, 'registerBilling'])->name('.registerBilling.store');
+        Route::get('/manageSites', [RegisterController::class, 'manageSites'])->name('.register.manageSites');
+        Route::post('/siteStore', [RegisterController::class, 'siteStore'])->name('.site.store');
 
         Route::get('/login', [LoginController::class, 'index'])->name('.login');
         Route::post('/login', [LoginController::class, 'check'])->name('.login.check');
@@ -42,10 +52,11 @@ Route::name('pages')->group(function () {
     });
 });
 
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'is_verify_email'])->name('users.dashboard');
 Route::middleware('auth')->name('users')->group(function () {
     Route::redirect('/home', '/dashboard');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
+    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
     Route::delete('/logout', [DashboardController::class, 'logout'])->name('.logout');
 
     Route::prefix('company')->name('.company')->group(function () {
@@ -67,5 +78,9 @@ Route::middleware('auth')->name('users')->group(function () {
         Route::get('/', [AccountSettingsController::class, 'index']);
         Route::patch('/general', [AccountSettingsController::class, 'updateGeneral'])->name('.updateGeneral');
         Route::patch('/change-password', [AccountSettingsController::class, 'changePassword'])->name('.changePassword');
+    });
+
+    Route::prefix('site')->name('.site')->group(function () {
+        Route::get('/', [SiteController::class, 'index']);
     });
 });

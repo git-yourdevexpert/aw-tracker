@@ -49,7 +49,6 @@ class SubscriptionPaymentController extends Controller
         if (! $price || empty($price)) {
             return back();
         }
-
         try {
             $user = auth()->user();
 
@@ -89,7 +88,6 @@ class SubscriptionPaymentController extends Controller
 
     public function success()
     {
-        dd(request()->all());
         return view('users.subscription.success');
     }
 
@@ -111,9 +109,7 @@ class SubscriptionPaymentController extends Controller
             $stripe->customers->update($user->stripe_customer_id, [
                 'source' => $stripeToken,
             ]);
-
             $company->update(['stripe_token' => $stripeToken]);
-
             session()->flash('successMessage', 'Card details added successfully');
 
             return back();
