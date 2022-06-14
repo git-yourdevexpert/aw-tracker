@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Mail\ResetPasswordLink;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\ForgotPasswordRequest;
+
 use App\Models\User;
 
 class ForgotPasswordController extends Controller
@@ -27,11 +29,9 @@ class ForgotPasswordController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(ForgotPasswordRequest $request)
     {
-        $this->validate($request, [
-            'email' => 'required|email:filter|exists:users,email',
-        ]);
+        $validated = $request->validated();
 
         \DB::table('password_resets')->insert([
             'email' => $request->email,

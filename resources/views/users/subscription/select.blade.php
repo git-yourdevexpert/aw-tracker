@@ -37,6 +37,7 @@
 @endsection
 
 @section('pageScript')
+{!! JsValidator::formRequest('App\Http\Requests\PlanChangeRequest', '#formPlanChange'); !!}
     <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
     <script>
         $('#formMakeSubscriptionPayment').on('submit', function (e) {

@@ -16,13 +16,12 @@
                     <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.company') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Company</a></li>
                     <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.subscription') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Subscription</a></li>
                     <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.accountSettings') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Account Settings</a></li>
-                    <li class="border-b sm:border-0 pb-2 sm:pb-0"><a href="{{ route('users.site') }}" class="text-gray-700 hover:text-green-700 focus:text-green-700 transition ease-in-out duration-300">Site</a></li>
                     <li class="border-b sm:border-0 pb-2 sm:pb-0 dropdown">
                         <i class="fa fa-user-circle fa-2xl dropbtn"></i>
                         <span class="dropdown-content">
                             <a href="#">{{ auth()->user()->getFullName() }}</a>
                             @foreach( siteName() as $site)
-                            <a href="{{ route('users.site') }}">
+                            <a href="">
                                     {{ $site['domain'] }}
                             </a>
                             @endforeach

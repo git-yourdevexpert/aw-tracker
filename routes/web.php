@@ -35,11 +35,8 @@ Route::name('pages')->group(function () {
         Route::get('/register', [RegisterController::class, 'index'])->name('.register');
         Route::post('/register', [RegisterController::class, 'store'])->name('.register.store');
         Route::get('/verify-email/{token}', [VerifyEmailController::class, 'check'])->name('.register.verifyEmail');
-        Route::get('/registerCompany', [RegisterController::class, 'registerCompany'])->name('.register.company');
         Route::post('/registerCompany', [RegisterController::class, 'storeCompany'])->name('.registerCompany.store');
-        Route::get('/billingInfo', [RegisterController::class, 'billingInfo'])->name('.register.billingInfo');
         Route::post('/registerBilling/{id}', [RegisterController::class, 'registerBilling'])->name('.registerBilling.store');
-        Route::get('/manageSites', [RegisterController::class, 'manageSites'])->name('.register.manageSites');
         Route::post('/siteStore', [RegisterController::class, 'siteStore'])->name('.site.store');
 
         Route::get('/login', [LoginController::class, 'index'])->name('.login');

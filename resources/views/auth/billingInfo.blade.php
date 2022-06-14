@@ -11,7 +11,7 @@
                 <h1 class="mb-6 text-3xl text-center">Registration</h1>
                 <h1 class="mb-4 text-2xl text-center">Enter Your Billing Information</h1>
 
-                <form method="POST" action="/registerBilling/{{ $company->id }}" id="formBillingInfoRegister">
+                <form method="POST" action="{{ route('pages.registerBilling.store',$company->id) }}" id="formBillingInfoRegister">
                     @csrf
                     <input type="hidden" name="id" value="{{ $company->id }}">
                     <input type="hidden" name="product_id" value="{{ $product_id }}">
@@ -83,7 +83,6 @@
                     </div>
                     <br>
                     <label for="card-element" class="block text-gray-700 mb-4">Card Details</label>
-                    <!-- <input type="hidden" name="payment_method" class="payment-method"> -->
                     <input id="card-holder-name" name="card-holder-name" type="text" placeholder="Card holder name">
                     <div class="cardElement mt-4" id="card-element"></div>
                     <div id="card-errors" role="alert"></div>
@@ -146,7 +145,7 @@
 
     cardButton.addEventListener('click', async (e) => {
         e.preventDefault();
-        // $("#formBillingInfoRegister").submit();
+        // $("#formBillingInfoRegister").validate();
         const { setupIntent, error } = await stripe.confirmCardSetup(
             clientSecret, {
                 payment_method: {
@@ -155,28 +154,10 @@
                 }
             }
             );
-       
-            console.log(setupIntent);
-            console.log(setupIntent.payment_method);
-            paymentMethodHandler(setupIntent.payment_method);
+        paymentMethodHandler(setupIntent.payment_method);
     });
 
-    // var form = document.getElementById('formBillingInfoRegister');
-    // form.addEventListener('submit', function(event) {
-    //     event.preventDefault();
-
-    //     stripe.createToken(card).then(function(result) {
-    //         if (result.error) {
-    //             var errorElement = document.getElementById('card-errors');
-    //             errorElement.textContent = result.error.message;
-    //         } else {
-    //             stripeTokenHandler(result.token);
-    //         }
-    //     });
-    // });
-
     function paymentMethodHandler(payment_method) {
-        alert(payment_method);
         var form = document.getElementById('formBillingInfoRegister');
         var hiddenInput = document.createElement('input');
         hiddenInput.setAttribute('type', 'hidden');

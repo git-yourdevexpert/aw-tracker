@@ -23,7 +23,7 @@ return new class extends Migration
             $table->char('zip', 9)->nullable();
             $table->string('country', 255)->nullable();
             $table->enum('status', ['0', '1'])->default('0')->nullable(); // 0 = NOT_VERIFIED, 1 = VERIFIED
-            $table->timestamp('c_time')->nullable();
+            $table->timestamp('c_time')->useCurrent();
             $table->string('stripe_token', 255)->nullable();
             $table->softDeletes();
         });

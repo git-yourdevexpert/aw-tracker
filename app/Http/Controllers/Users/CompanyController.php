@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Users;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CompanyRequest;
 
 class CompanyController extends Controller
 {
@@ -66,9 +67,7 @@ class CompanyController extends Controller
                 'stripe_customer_id' => $customer->id,
             ]);
 
-            session()->flash('successMessage', "Company created successfully.");
-
-            return back();
+            return back()->with('successMessage', "Company created successfully.");
         } catch (\Exception $e) {
             info($e->getMessage());
             info($e->getTraceAsString());
@@ -84,35 +83,22 @@ class CompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \illuminate\Http\RedirectResponse
      */
-    public function update($id, Request $request)
+    public function update($id, CompanyRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|max:255',
-            'address1' => 'required|max:255',
-            'address2' => 'nullable|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:3',
-            'zip' => 'required|string|max:9',
-            'country' => 'required|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         $user = auth()->user();
 
         $company = $user->companies()->find($id);
         if (! $company) {
-            sessiopn()->flash("errorMessage", "Company with the given id not found.");
-            return back();
+            return back()->with("errorMessage", "Company with the given id not found.");
         }
 
         if (! $user->isOwnerOfAnyCompany($company)) {
-            session()->flash("errorMessage", "You don't have permissions to update the company details.");
-            return back();
+            return back()->with("errorMessage", "You don't have permissions to update the company details.");
         }
 
         $company->update($request->all());
-
-        session()->flash('successMessage', 'Company details updated successfully.');
-
-        return back();
+        return back()->with('successMessage', 'Company details updated successfully.');
     }
 }

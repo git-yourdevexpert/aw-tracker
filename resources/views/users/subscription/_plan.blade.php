@@ -5,10 +5,10 @@
             <p class="mt-4 text-sm text-gray-600 tracking-wider pr-4">Select your subscription in order to continue using this application. The invoice will also be sent to you on registered email address.</p>
         </div>
 
-        <form action="{{ route('users.subscription.pay') }}" method="post">
+        <form action="{{ route('users.subscription.pay') }}" method="post" id="formPlanChange">
             @csrf
 
-            <select name="product_id" id="product_id" class="w-full px-3 py-2 bg-gray-100 my-3" required>
+            <select name="product_id" id="product_id" class="w-full px-3 py-2 bg-gray-100 my-3">
                 <option value="">Select</option>
                 @foreach ($allProducts as $prdId => $product)
                     <option value="{{ $prdId }}">{{ $product['name'] }}</option>

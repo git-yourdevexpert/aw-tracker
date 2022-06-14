@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Uuid;
 use Auth;
+use DB;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
@@ -61,9 +62,10 @@ class RegisterController extends Controller
         $product_id = $request->product_id;
         return view('auth.billingInfo',compact('company','product_id','intent','user'));
     }
-
     public function registerBilling($id,BillingInfoRegistrationRequest $request){
         $validated = $request->validated();
+        DB::beginTransaction();
+        try{
             $company = Company::find($id);
             $usersCompany = UsersCompany::where('company_id',$company->id)->first();
             $user = User::where('id',$usersCompany->user_id)->first();
@@ -86,41 +88,33 @@ class RegisterController extends Controller
             $user->update([
                 'stripe_customer_id' => $customer->id,
             ]);
-            //create card on stripe
-            $paymentMethod = $request->input('payment_method');
-            $payment_method = $user->addPaymentMethod($paymentMethod);
-            $company = $user->companies()->first();
-            $company->update(['stripe_token' => $paymentMethod]);
 
+            //create card on stripe
+            $paymentMethod = null;
+            $paymentMethod = $request->payment_method;
+            if($paymentMethod != null){
+                $paymentMethod = $user->addPaymentMethod($paymentMethod);
+            }
+            $company = $user->companies()->first();
+            $company->update(['stripe_token' => $paymentMethod->id]);
+            
             //create subscription on stripe
             $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
             $product = $stripe->products->retrieve($request->product_id);
             $price = $stripe->prices->retrieve($product->default_price);
+            $subscription = $user->newSubscription($product->id,$price->id)
+                                        ->create($paymentMethod != null ? $paymentMethod->id: '');
+            $invoice = $user->subscription($product->id)->upcomingInvoice();
+        }
+        catch (\Exception $e) {
+            info($e->getMessage());
+            info($e->getTraceAsString());
+            DB::rollback();
+            return redirect()->back()->with('errorMessage','Something went Wrong');
+        }
 
-            $subscription = $user->newSubscription('default', $product)->create($paymentMethod, [
-                'email' => $user->email
-            ]);
-            dd($subscription);
-            // $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
-            // $product = $stripe->products->retrieve($request->product_id);
-            // $response = $stripe->subscriptions->create([
-            //     'customer' => $user->stripe_customer_id,
-            //     'items' => [
-            //         ['price' => $price->id,]
-            //     ],
-            //     'description' => "Making a subscription payment for {$product->name}",
-            //     'billing_cycle_anchor' => today()->addMonth()->timestamp,
-            //     'payment_settings' => [
-            //         'payment_method_types' => [
-            //             'card',
-            //         ]
-            //     ]
-            // ]);
-
-            $invoice = $stripe->invoices->retrieve($response->latest_invoice);
-
-            session()->flash('successMessage', "Your Account Sign up Sucessfully.");
-            return view('auth.manageSites',compact('user','company'));
+        session()->flash('successMessage', "Your Account Sign up Sucessfully.");
+        return view('auth.manageSites',compact('user','company'));
     }
 
     public function siteStore(ManageSiteRequest $request){

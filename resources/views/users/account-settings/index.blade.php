@@ -24,11 +24,13 @@
             @include('users.account-settings._general')
 
             @include('users.account-settings._password')
+
+            @include('users.account-settings._manage_card')
         </div>
     </section>
 @endsection
 
 @section('pageScript')
-<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\GeneralSettingRequest', '#formGeneralSettings'); !!}</span>
-<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\ChangePasswordRequest', '#formChangePassword'); !!}</span>
+{!! JsValidator::formRequest('App\Http\Requests\GeneralSettingRequest', '#formGeneralSettings'); !!}
+{!! JsValidator::formRequest('App\Http\Requests\ChangePasswordRequest', '#formChangePassword'); !!}
 @endsection

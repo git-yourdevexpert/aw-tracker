@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResetPasswordRequest;
 
 class ResetPasswordController extends Controller
 {
@@ -29,12 +30,9 @@ class ResetPasswordController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request)
+    public function update(ResetPasswordRequest $request)
     {
-        $this->validate($request, [
-            'new_password' => 'required',
-            'repeat_new_password' => 'required|same:new_password',
-        ]);
+        $validated = $request->validated();
 
         $record = \DB::table('password_resets')
                     ->where('token', $request->reset_token)

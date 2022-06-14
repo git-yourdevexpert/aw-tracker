@@ -64,11 +64,12 @@
 @endsection
 
 @section('pageScript')
-    <script>
+{!! JsValidator::formRequest('App\Http\Requests\ForgotPasswordRequest', '#formForgotPassword'); !!} 
+    <!-- <script>
         $('#formForgotPassword').on('submit', function (e) {
             $('#btnForgotPassword').attr('disabled', true).addClass('opacity-50');
             $('#btnForgotPassword .spinner').removeClass('hidden');
             $('.btnText').text('Sending...');
         });
-    </script>
+    </script> -->
 @endsection

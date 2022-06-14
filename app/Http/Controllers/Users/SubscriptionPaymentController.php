@@ -39,51 +39,30 @@ class SubscriptionPaymentController extends Controller
      */
     public function store()
     {
-        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
-        $product = $stripe->products->retrieve(request('product_id'));
-        if (! $product || empty($product)) {
-            return back();
-        }
-
-        $price = $stripe->prices->retrieve($product->default_price);
-        if (! $price || empty($price)) {
-            return back();
-        }
         try {
+            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            $product = $stripe->products->retrieve(request('product_id'));
+            if (! $product || empty($product)) {
+                return back()->with('errorMessage','Please Select Product Or Valid Product');
+            }
+    
+            $price = $stripe->prices->retrieve($product->default_price);
+            if (! $price || empty($price)) {
+                return back()->with('errorMessage','Please Select Price Or Valid Price');
+            }
             $user = auth()->user();
 
-            $response = $stripe->subscriptions->create([
-                'customer' => $user->stripe_customer_id,
-                'items' => [
-                    ['price' => $price->id,]
-                ],
-                'description' => "Making a subscription payment for {$product->name}",
-                'billing_cycle_anchor' => today()->addMonth()->timestamp,
-                'payment_settings' => [
-                    'payment_method_types' => [
-                        'card',
-                    ]
-                ]
-            ]);
+            $subscription = $user->newSubscription($product->id,$price->id)
+            ->create();
+            $invoice = $user->subscription($product->id)->upcomingInvoice();
 
-            $invoice = $stripe->invoices->retrieve($response->latest_invoice);
-            $captureResponse = $stripe->paymentIntents->confirm(
-                $invoice->payment_intent, ['return_url' => route('users.subscription.success')]
-            );
-
-            if ($captureResponse->status === 'requires_action') {
-                return redirect($captureResponse->next_action->redirect_to_url->url);
-            }
-
-            return back();
+            return redirect()->back()->with('successMessage', 'New Plan added successfully');
         } catch (\Exception $e) {
             info($e->getMessage());
             info($e->getTraceAsString());
 
-            return back();
+            return back()->with('errorMessage','Error to create new plan');
         }
-
-        return back();
     }
 
     public function success()
@@ -110,14 +89,12 @@ class SubscriptionPaymentController extends Controller
                 'source' => $stripeToken,
             ]);
             $company->update(['stripe_token' => $stripeToken]);
-            session()->flash('successMessage', 'Card details added successfully');
-
-            return back();
+            return back()->with('successMessage', 'Card details added successfully');
         } catch (\Exception $e) {
             info($e->getMessage());
             info($e->getTraceAsString());
 
-            return back();
+            return back()->with('errorMessage','Error To add new card');
         }
     }
 }

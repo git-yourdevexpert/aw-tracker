@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Users;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\GeneralSettingRequest;
+use App\Http\Requests\ChangePasswordRequest;
 
 class AccountSettingsController extends Controller
 {
@@ -16,7 +18,12 @@ class AccountSettingsController extends Controller
     public function index()
     {
         $user = auth()->user();
-
+        $paymentMethods = $user->paymentMethods();
+        // dd($paymentMethods);
+        // foreach($paymentMethods as $key => $payment){
+        //     dd($paymentMethods[$key]);
+        // }
+        // exit;
         return view('users.account-settings.index', compact('user'));
     }
 
@@ -26,19 +33,13 @@ class AccountSettingsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateGeneral(Request $request)
+    public function updateGeneral(GeneralSettingRequest $request)
     {
-        $this->validate($request, [
-            'first_name' => 'required|max:255',
-            'last_name' => 'required|max:255',
-            'email' => 'required|email:filter|unique:users,email,'. auth()->id(),
-        ]);
+        $validated = $request->validated();
 
         auth()->user()->update($request->all());
 
-        session()->flash('successMessage', "General settings updated successfully.");
-
-        return back();
+        return back()->with('successMessage', "General settings updated successfully.");
     }
 
     /**
@@ -47,25 +48,17 @@ class AccountSettingsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function changePassword(Request $request)
+    public function changePassword(ChangePasswordRequest $request)
     {
-        $this->validate($request, [
-            'current_password' => 'required',
-            'new_password' => 'required',
-            'repeat_new_password' => 'required|same:new_password',
-        ]);
+        $validated = $request->validated();
 
         $user = auth()->user();
         if (Hash::check($request->current_password, $user->password)) {
             $user->update(['password' => bcrypt($request->new_password)]);
 
-            session()->flash('successMessage', "Password changed successfully.");
-
-            return back();
+            return back()->with('successMessage', "Password changed successfully.");
         }
 
-        session()->flash('errorMessage', "Invalid current password provided.");
-
-        return back();
+        return back()->with('errorMessage', "Invalid current password provided.");
     }
 }

@@ -50,5 +50,5 @@
 @endsection
 
 @section('pageScript')
-<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\CompanyRegistrationRequest', '#formCompanyRegister'); !!}</span>
+{!! JsValidator::formRequest('App\Http\Requests\CompanyRegistrationRequest', '#formCompanyRegister'); !!}
 @endsection

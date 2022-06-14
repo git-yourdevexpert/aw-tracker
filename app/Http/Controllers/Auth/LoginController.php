@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Mail\VerifyEmailAddress;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\LoginRequest;
 
 class LoginController extends Controller
 {
@@ -26,12 +27,9 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function check(Request $request)
+    public function check(LoginRequest $request)
     {
-        $this->validate($request, [
-            'email' => 'required|email:filter|exists:users,email',
-            'password' => 'required',
-        ]);
+        $validated = $request->validated();
 
         if (auth()->attempt($request->only(['email', 'password']))) {
             $request->session()->regenerate();

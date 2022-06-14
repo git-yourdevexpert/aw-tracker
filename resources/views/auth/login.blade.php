@@ -77,5 +77,5 @@
 @endsection
 
 @section('pageScript')
-<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\LoginRequest', '#formLogin'); !!}</span> 
+{!! JsValidator::formRequest('App\Http\Requests\LoginRequest', '#formLogin'); !!} 
 @endsection
