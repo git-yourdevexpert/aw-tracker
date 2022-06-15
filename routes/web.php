@@ -75,6 +75,7 @@ Route::middleware('auth')->name('users')->group(function () {
         Route::get('/', [AccountSettingsController::class, 'index']);
         Route::patch('/general', [AccountSettingsController::class, 'updateGeneral'])->name('.updateGeneral');
         Route::patch('/change-password', [AccountSettingsController::class, 'changePassword'])->name('.changePassword');
+        Route::get('/changeDefaultCard',[AccountSettingsController::class, 'changeDefaultCard'])->name('.changeDefaultCard');
     });
 
     Route::prefix('site')->name('.site')->group(function () {

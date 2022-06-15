@@ -18,6 +18,7 @@
         "tailwindcss": "^3.0.24"
     },
     "dependencies": {
-        "font-awesome": "^4.7.0"
+        "font-awesome": "^4.7.0",
+        "sweetalert2": "^11.4.17"
     }
 }

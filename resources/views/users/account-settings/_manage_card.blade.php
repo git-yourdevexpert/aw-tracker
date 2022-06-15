@@ -6,7 +6,12 @@
         </div>
 
         <div class="mt-6 md:mt-0 w-full md:w-2/3">
-           
+        <h4 class="text-xl">Default Card</h4>
+            @foreach($cards as $key => $card)
+                <input type="radio" name="default_card" class="default_card" value="{{ $card['card_id'] }}" onchange="defaultCard('{{ $card['card_id'] }}')" {{ $default_card === $card['card_id'] ? 'checked' : ''; }}>
+                {{ $card['card_last4']}}  <br/>
+                &nbsp &nbsp Expires {{ $card['card_exp_month'] }} / {{ $card['card_exp_year'] }} <br /><br/>
+            @endforeach
         </div>
     </div>
 </div>

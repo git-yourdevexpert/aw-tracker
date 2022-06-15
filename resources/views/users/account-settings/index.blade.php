@@ -33,4 +33,36 @@
 @section('pageScript')
 {!! JsValidator::formRequest('App\Http\Requests\GeneralSettingRequest', '#formGeneralSettings'); !!}
 {!! JsValidator::formRequest('App\Http\Requests\ChangePasswordRequest', '#formChangePassword'); !!}
+<script>
+    function defaultCard(card){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This card change to Default Card",
+            showCancelButton: true,
+            confirmButtonColor: 'green',
+            confirmButtonText: 'Make as Default!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                axios.get("{{ route('users.accountSettings.changeDefaultCard') }}", {
+                params: { card: card } }, { headers: { "Content-Type": "application/json"}
+                })
+                .then(function (response) {
+                    console.log(response.data.message);
+                    Swal.fire(
+                    'Changed!',
+                    response.data.message,
+                    'success'
+                    )
+                })
+                .catch(function (error) {
+                    Swal.fire(
+                    'Sorry Not Changed!',
+                    response.data.message,
+                    'error'
+                    )
+                })
+            }
+        })
+    }
+</script>
 @endsection

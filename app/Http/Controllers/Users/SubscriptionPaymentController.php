@@ -85,7 +85,7 @@ class SubscriptionPaymentController extends Controller
 
         try {
             $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
-            $stripe->customers->update($user->stripe_customer_id, [
+            $stripe->customers->update($user->stripe_id, [
                 'source' => $stripeToken,
             ]);
             $company->update(['stripe_token' => $stripeToken]);

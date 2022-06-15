@@ -19,12 +19,13 @@ class AccountSettingsController extends Controller
     {
         $user = auth()->user();
         $paymentMethods = $user->paymentMethods();
-        // dd($paymentMethods);
-        // foreach($paymentMethods as $key => $payment){
-        //     dd($paymentMethods[$key]);
-        // }
-        // exit;
-        return view('users.account-settings.index', compact('user'));
+        $deafultPaymentMethod = $user->defaultPaymentMethod();
+        $default_card = $deafultPaymentMethod->id;
+        $cards=[];
+        foreach($paymentMethods as $key => $payment){
+            $cards[$key] = ['card_id'=>$payment->id, 'card_last4'=>'XXXX-XXXX-XXXX-'.$payment->card->last4, 'card_exp_month'=>$payment->card->exp_month, 'card_exp_year'=>$payment->card->exp_year];
+        }
+        return view('users.account-settings.index', compact('user','cards','default_card'));
     }
 
     /**
@@ -60,5 +61,14 @@ class AccountSettingsController extends Controller
         }
 
         return back()->with('errorMessage', "Invalid current password provided.");
+    }
+    public function changeDefaultCard(Request $request){
+        $user = auth()->user();
+        $defaultCard = $user->updateDefaultPaymentMethod($request->card);
+        return response()->json([
+            'success' => true,
+            'card' => $defaultCard,
+            'message' => 'Default Card for Payment Set Successfully',
+        ]);
     }
 }

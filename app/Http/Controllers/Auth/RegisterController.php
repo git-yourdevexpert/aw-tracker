@@ -64,14 +64,14 @@ class RegisterController extends Controller
     }
     public function registerBilling($id,BillingInfoRegistrationRequest $request){
         $validated = $request->validated();
-        DB::beginTransaction();
         try{
             $company = Company::find($id);
             $usersCompany = UsersCompany::where('company_id',$company->id)->first();
             $user = User::where('id',$usersCompany->user_id)->first();
             $company->update($request->all());
+            
             $company->users()->attach($user->id, ['access_level' => Company::ACCESS_OWNER]);
-
+           
             //create customer on stripe
             $customer = $user->createAsStripeCustomer([
                 'email' => $user->email,
@@ -84,11 +84,10 @@ class RegisterController extends Controller
                     'country' => $company->country,
                 ],
             ]);
-
-            $user->update([
+            $user1 = User::find($usersCompany->user_id);
+            $updateUser = $user1->update([
                 'stripe_customer_id' => $customer->id,
             ]);
-
             //create card on stripe
             $paymentMethod = null;
             $paymentMethod = $request->payment_method;
@@ -105,16 +104,14 @@ class RegisterController extends Controller
             $subscription = $user->newSubscription($product->id,$price->id)
                                         ->create($paymentMethod != null ? $paymentMethod->id: '');
             $invoice = $user->subscription($product->id)->upcomingInvoice();
+            session()->flash('successMessage', "Your Account Sign up Sucessfully.");
+            return view('auth.manageSites',compact('user','company'));
         }
         catch (\Exception $e) {
             info($e->getMessage());
             info($e->getTraceAsString());
-            DB::rollback();
             return redirect()->back()->with('errorMessage','Something went Wrong');
         }
-
-        session()->flash('successMessage', "Your Account Sign up Sucessfully.");
-        return view('auth.manageSites',compact('user','company'));
     }
 
     public function siteStore(ManageSiteRequest $request){

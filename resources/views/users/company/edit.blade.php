@@ -142,5 +142,5 @@
 @endsection
 
 @section('pageScript')
-<span style="color:red;">{!! JsValidator::formRequest('App\Http\Requests\CompanyRequest', '#formEditCompany'); !!}</span>
+{!! JsValidator::formRequest('App\Http\Requests\CompanyRequest', '#formEditCompany'); !!}
 @endsection
