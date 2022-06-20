@@ -10,13 +10,6 @@ class Company extends Model
 {
     use HasFactory, SoftDeletes;
 
-    const NOT_VERFIFIED = '0';
-    const VERFIFIED = '1';
-
-    const ACCESS_OWNER = '0';
-    const ACCESS_ADMIN = '1';
-    const ACCESS_USER = '2';
-
     /**
      * The attributes that will be mutated to Carbon instance.
      *

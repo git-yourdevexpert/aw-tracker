@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Users;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\GeneralSettingRequest;
 use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\GeneralSettingRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AccountSettingsController extends Controller
 {
@@ -21,11 +21,7 @@ class AccountSettingsController extends Controller
         $paymentMethods = $user->paymentMethods();
         $deafultPaymentMethod = $user->defaultPaymentMethod();
         $default_card = $deafultPaymentMethod->id;
-        $cards=[];
-        foreach($paymentMethods as $key => $payment){
-            $cards[$key] = ['card_id'=>$payment->id, 'card_last4'=>'XXXX-XXXX-XXXX-'.$payment->card->last4, 'card_exp_month'=>$payment->card->exp_month, 'card_exp_year'=>$payment->card->exp_year];
-        }
-        return view('users.account-settings.index', compact('user','cards','default_card'));
+        return view('users.account-settings.index', compact('user', 'paymentMethods', 'default_card'));
     }
 
     /**
@@ -36,8 +32,6 @@ class AccountSettingsController extends Controller
      */
     public function updateGeneral(GeneralSettingRequest $request)
     {
-        $validated = $request->validated();
-
         auth()->user()->update($request->all());
 
         return back()->with('successMessage', "General settings updated successfully.");
@@ -51,8 +45,6 @@ class AccountSettingsController extends Controller
      */
     public function changePassword(ChangePasswordRequest $request)
     {
-        $validated = $request->validated();
-
         $user = auth()->user();
         if (Hash::check($request->current_password, $user->password)) {
             $user->update(['password' => bcrypt($request->new_password)]);
@@ -62,7 +54,8 @@ class AccountSettingsController extends Controller
 
         return back()->with('errorMessage', "Invalid current password provided.");
     }
-    public function changeDefaultCard(Request $request){
+    public function changeDefaultCard(Request $request)
+    {
         $user = auth()->user();
         $defaultCard = $user->updateDefaultPaymentMethod($request->card);
         return response()->json([

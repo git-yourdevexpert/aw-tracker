@@ -28,38 +28,32 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::stripeWebhooks('stripe-webhook');
+// Route::stripeWebhooks('webhook');
 
-Route::name('pages')->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('/register', [RegisterController::class, 'index'])->name('.register');
-        Route::post('/register', [RegisterController::class, 'store'])->name('.register.store');
-        Route::get('/verify-email/{token}', [VerifyEmailController::class, 'check'])->name('.register.verifyEmail');
-        Route::post('/registerCompany', [RegisterController::class, 'storeCompany'])->name('.registerCompany.store');
-        Route::post('/registerBilling/{id}', [RegisterController::class, 'registerBilling'])->name('.registerBilling.store');
-        Route::post('/siteStore', [RegisterController::class, 'siteStore'])->name('.site.store');
-
-        Route::get('/login', [LoginController::class, 'index'])->name('.login');
-        Route::post('/login', [LoginController::class, 'check'])->name('.login.check');
-
-        Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('.forgotPassword');
-        Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('.forgotPassword.store');
-        Route::get('/reset-password/{token}', [ResetPasswordController::class, 'index'])->name('.resetPassword');
-        Route::post('/reset-password', [ResetPasswordController::class, 'update'])->name('.resetPassword.update');
-    });
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [RegisterController::class, 'index'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+    Route::get('/verify-email/{token}', [VerifyEmailController::class, 'verifyEmail'])->name('register.verifyEmail');
+    Route::post('/registerCompany', [RegisterController::class, 'storeCompany'])->name('registerCompany.store');
+    Route::post('/registerBilling/{id}', [RegisterController::class, 'registerBilling'])->name('registerBilling.store');
+    Route::post('/siteStore', [RegisterController::class, 'siteStore'])->name('site.store');
+    Route::get('/login', [LoginController::class, 'index'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.check');
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'index'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
 });
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'is_verify_email'])->name('users.dashboard');
 Route::middleware('auth')->name('users')->group(function () {
     Route::redirect('/home', '/dashboard');
-
-    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('.dashboard');
     Route::delete('/logout', [DashboardController::class, 'logout'])->name('.logout');
 
     Route::prefix('company')->name('.company')->group(function () {
         Route::get('/', [CompanyController::class, 'index']);
-        Route::post('/', [CompanyController::class, 'store'])->name('.store');
-        Route::patch('/{id}', [CompanyController::class, 'update'])->name('.update');
+        Route::patch('/{id}', [CompanyController::class, 'updateCompany'])->name('.update');
     });
 
     Route::prefix('subscription')->name('.subscription')->group(function () {

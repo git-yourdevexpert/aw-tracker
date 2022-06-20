@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Users;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -28,6 +28,6 @@ class DashboardController extends Controller
 
         request()->session()->regenerate();
 
-        return redirect(route('pages.login'));
+        return redirect(route('login'));
     }
 }

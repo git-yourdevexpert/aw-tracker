@@ -1,4 +1,4 @@
-@extends('partials._layout')
+@extends('partials.layout')
 
 @section('title_meta')
     <title>{{ config('app.name') }}</title>
