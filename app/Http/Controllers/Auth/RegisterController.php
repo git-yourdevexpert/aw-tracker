@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Uuid;
 use Laravel\Cashier\Cashier;
+use App\Notifications\VerifyEmailNotification;
+use Notification;
 use DB;
 
 class RegisterController extends Controller
@@ -47,8 +49,7 @@ class RegisterController extends Controller
             'status' => config('constants.PENDING_VERIFICATION'),
         ];
         $user = User::create(array_merge($request->all(),$data));
-        Mail::to($user->email, $user->full_name)
-            ->send(new VerifyEmailAddress($user));
+        Notification::send($user, new VerifyEmailNotification($user));
         return redirect()->route('register')->with('successMessage', 'Please Check Your Mail and Verify Your Account.');
     }
 
