@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes,Billable;
-
-    const PENDING_VERIFICATION = '0';
-    const VERFIFIED = '1';
-
+    use HasFactory, Notifiable, SoftDeletes, Billable;
 
     /**
      * The dates that will be mutated to Carbon instance.
@@ -61,7 +56,11 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public function getFullName()
+
+    protected $appends = ['full_name'];
+
+
+    public function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
     }
@@ -88,16 +87,16 @@ class User extends Authenticatable
             $company = $this->companies()->first();
         }
 
-        if (! $company) {
+        if (!$company) {
             return false;
         }
 
         $hasUser = $company->users()->find($this->id);
-        if (! $hasUser) {
+        if (!$hasUser) {
             return false;
         }
 
-        if ($hasUser->pivot->access_level === Company::ACCESS_OWNER) {
+        if ($hasUser->pivot->access_level === config('constants.ACCESS_OWNER')) {
             return true;
         }
 

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Mail\ResetPasswordLink;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\ForgotPasswordRequest;
-
+use App\Mail\ResetPasswordLink;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
@@ -31,24 +31,12 @@ class ForgotPasswordController extends Controller
      */
     public function store(ForgotPasswordRequest $request)
     {
-        $validated = $request->validated();
-
-        \DB::table('password_resets')->insert([
-            'email' => $request->email,
-            'token' => Str::random(64),
-            'created_at' => now(),
-        ]);
-
-        $record = \DB::table('password_resets')->where('email', $request->email)->first();
-        $user = User::where('email',$request->email)->first();
-        if($user->verification_token == null){
-            Mail::to($request->email)
-            ->send(new ResetPasswordLink($record));
-            session()->flash('successMessage', "Password reset link email sent successfully.");
-        }else{
-            session()->flash('errorMessage', "Please verify Email First..");
-        }
-
-        return back()->withInput();
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+     
+        return $status === Password::RESET_LINK_SENT
+                    ? back()->with(['successMessage' => "Password reset link email sent successfully."])
+                    : back()->withErrors(['errorMessage' => "Please verify Email First.."]);
     }
 }

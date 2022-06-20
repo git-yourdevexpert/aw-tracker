@@ -19,7 +19,7 @@ class IsVerifyEmail
         if (!Auth::user()->email_verified_at) {
             auth()->logout();
             session()->flash('couldNotLogin', "Please Verify Email First.");
-            return redirect()->route('pages.login');
+            return redirect()->route('login');
         }
         return $next($request);
     }

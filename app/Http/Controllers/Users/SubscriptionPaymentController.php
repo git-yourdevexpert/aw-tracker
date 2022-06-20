@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Users;
 
-use Stripe;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Laravel\Cashier\Cashier;
 
 class SubscriptionPaymentController extends Controller
 {
@@ -15,19 +15,8 @@ class SubscriptionPaymentController extends Controller
      */
     public function index()
     {
-        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
-        $products = $stripe->products->all(['expand' => ['data.default_price']]);
-
-        $allProducts = [];
-        foreach ($products as $key => $product) {
-            $allProducts[$product->id] = [
-                'product_id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'price_id' => $product->default_price->id,
-                'amount' => ($product->default_price->unit_amount / 100),
-            ];
-        }
+        $stripe = Cashier::stripe();
+        $allProducts = $stripe->products->all(['expand' => ['data.default_price']]);
 
         return view('users.subscription.select', compact('allProducts'));
     }
@@ -40,28 +29,28 @@ class SubscriptionPaymentController extends Controller
     public function store()
     {
         try {
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            $stripe = Cashier::stripe();
             $product = $stripe->products->retrieve(request('product_id'));
-            if (! $product || empty($product)) {
-                return back()->with('errorMessage','Please Select Product Or Valid Product');
+            if (!$product || empty($product)) {
+                return back()->with('errorMessage', 'Please Select Product Or Valid Product');
             }
-    
+
             $price = $stripe->prices->retrieve($product->default_price);
-            if (! $price || empty($price)) {
-                return back()->with('errorMessage','Please Select Price Or Valid Price');
+            if (!$price || empty($price)) {
+                return back()->with('errorMessage', 'Please Select Price Or Valid Price');
             }
             $user = auth()->user();
 
-            $subscription = $user->newSubscription($product->id,$price->id)
-            ->create();
+            $subscription = $user->newSubscription($product->id, $price->id)
+                ->create();
             $invoice = $user->subscription($product->id)->upcomingInvoice();
 
             return redirect()->back()->with('successMessage', 'New Plan added successfully');
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             info($e->getMessage());
             info($e->getTraceAsString());
 
-            return back()->with('errorMessage','Error to create new plan');
+            return back()->with('errorMessage', 'Error to create new plan');
         }
     }
 
@@ -84,17 +73,17 @@ class SubscriptionPaymentController extends Controller
         $stripeToken = $request->stripeToken;
 
         try {
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET', null));
+            $stripe = Cashier::stripe();
             $stripe->customers->update($user->stripe_id, [
                 'source' => $stripeToken,
             ]);
             $company->update(['stripe_token' => $stripeToken]);
             return back()->with('successMessage', 'Card details added successfully');
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             info($e->getMessage());
             info($e->getTraceAsString());
 
-            return back()->with('errorMessage','Error To add new card');
+            return back()->with('errorMessage', 'Error To add new card');
         }
     }
 }

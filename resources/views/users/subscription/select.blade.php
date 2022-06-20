@@ -1,4 +1,4 @@
-@extends('users.partials._layout')
+@extends('users.partials.layout')
 
 @section('title_meta')
     <title>Select Subsription | {{ config('app.name') }}</title>
@@ -29,18 +29,18 @@
                 </div>
             @endif
 
-            @include('users.subscription._plan')
+            @include('users.subscription.plan')
 
-            @include('users.subscription._add_card_details')
+            @include('users.subscription.add_card_details')
         </div>
     </section>
 @endsection
 
 @section('pageScript')
-{!! JsValidator::formRequest('App\Http\Requests\PlanChangeRequest', '#formPlanChange'); !!}
+    {!! JsValidator::formRequest('App\Http\Requests\PlanChangeRequest', '#formPlanChange') !!}
     <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
     <script>
-        $('#formMakeSubscriptionPayment').on('submit', function (e) {
+        $('#formMakeSubscriptionPayment').on('submit', function(e) {
             $('#btnMakeSubscriptionPayment').attr('disabled', true).addClass('opacity-50');
             $('#btnMakeSubscriptionPayment .spinner').removeClass('hidden');
             $('#btnMakeSubscriptionPayment .btnText').text('Storing...');
@@ -62,7 +62,9 @@
             },
         };
 
-        var card = elements.create('card', {style: style});
+        var card = elements.create('card', {
+            style: style
+        });
 
         card.mount('#card-element');
 

@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Mail\VerifyEmailAddress;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
-use App\Http\Requests\LoginRequest;
 
 class LoginController extends Controller
 {
@@ -27,10 +25,8 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function check(LoginRequest $request)
+    public function login(LoginRequest $request)
     {
-        $validated = $request->validated();
-
         if (auth()->attempt($request->only(['email', 'password']))) {
             $request->session()->regenerate();
 

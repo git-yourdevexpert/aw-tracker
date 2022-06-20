@@ -1,4 +1,4 @@
-@extends('users.partials._layout')
+@extends('users.partials.layout')
 
 @section('title_meta')
     <title>Subscription successful | {{ config('app.name') }}</title>
